@@ -26,6 +26,7 @@ out/
 
 ### Package Files ###
 *.jar
+!artifacts/*.jar
 *.war
 *.nar
 *.ear
