@@ -1,0 +1,1 @@
+[![Java CI with Gradle (iBank)](https://github.com/Elena-omg/BankLoginTests/actions/workflows/main.yml/badge.svg)](https://github.com/Elena-omg/BankLoginTests/actions/workflows/main.yml)
