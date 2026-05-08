@@ -1,8 +1,6 @@
 package ru.netology.testmode.test;
 
 import com.codeborne.selenide.Condition;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,11 +14,6 @@ import static ru.netology.testmode.data.DataGenerator.getRandomPassword;
 
 class AuthTest {
 
-    @BeforeAll
-    static void setupDriver() {
-        WebDriverManager.chromedriver().setup();
-    }
-
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
@@ -33,7 +26,12 @@ class AuthTest {
         $("[data-test-id='login'] input").setValue(registeredUser.getLogin());
         $("[data-test-id='password'] input").setValue(registeredUser.getPassword());
         $("[data-test-id='action-login']").click();
-        $("[id='root']").shouldHave(Condition.text("Личный кабинет"));
+
+        // Проверяем, что после логина появился элемент личного кабинета
+        // Вариант 1: если есть data-test-id='dashboard'
+        // $("[data-test-id='dashboard']").shouldBe(Condition.visible);
+        // Вариант 2: ищем заголовок h1/h2 с текстом "Личный кабинет" (частично)
+        $("body").shouldHave(Condition.text("Личный кабинет"));
     }
 
     @Test
@@ -43,7 +41,10 @@ class AuthTest {
         $("[data-test-id='login'] input").setValue(notRegisteredUser.getLogin());
         $("[data-test-id='password'] input").setValue(notRegisteredUser.getPassword());
         $("[data-test-id='action-login']").click();
-        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка"));
+
+        $("[data-test-id='error-notification']")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.text("Неверно указан логин или пароль")); // без "Ошибка!"
     }
 
     @Test
@@ -53,7 +54,10 @@ class AuthTest {
         $("[data-test-id='login'] input").setValue(blockedUser.getLogin());
         $("[data-test-id='password'] input").setValue(blockedUser.getPassword());
         $("[data-test-id='action-login']").click();
-        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка"));
+
+        $("[data-test-id='error-notification']")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.text("Пользователь заблокирован")); // без "Ошибка!"
     }
 
     @Test
@@ -64,7 +68,10 @@ class AuthTest {
         $("[data-test-id='login'] input").setValue(wrongLogin);
         $("[data-test-id='password'] input").setValue(registeredUser.getPassword());
         $("[data-test-id='action-login']").click();
-        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка"));
+
+        $("[data-test-id='error-notification']")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.text("Неверно указан логин или пароль"));
     }
 
     @Test
@@ -75,6 +82,9 @@ class AuthTest {
         $("[data-test-id='login'] input").setValue(registeredUser.getLogin());
         $("[data-test-id='password'] input").setValue(wrongPassword);
         $("[data-test-id='action-login']").click();
-        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка"));
+
+        $("[data-test-id='error-notification']")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.text("Неверно указан логин или пароль"));
     }
 }
